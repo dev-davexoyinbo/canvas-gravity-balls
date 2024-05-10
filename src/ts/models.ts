@@ -4,7 +4,7 @@ export type Vec = {
 };
 
 export abstract class IDrawable {
-  requiresUpdate: boolean = true;
+  //   requiresUpdate: boolean = true;
   keepWithinContextBounds: boolean = false;
   particleOffset: Vec = { x: 0, y: 0 };
 
@@ -13,13 +13,22 @@ export abstract class IDrawable {
   abstract acceleration: Vec;
 
   draw(ctx: CanvasRenderingContext2D): void {
-    if (!this.requiresUpdate) return;
+    // if (!this.requiresUpdate) return;
     this._draw(ctx);
-    this.requiresUpdate = false;
+    this.computeKinetics(ctx);
+    // this.requiresUpdate = false;
   }
 
   protected abstract _draw(ctx: CanvasRenderingContext2D): void;
   protected computeKinetics(ctx: CanvasRenderingContext2D) {
+    if (
+      this.velocity.x == 0 &&
+      this.velocity.y == 0 &&
+      this.acceleration.x == 0 &&
+      this.acceleration.y == 0
+    )
+      return;
+
     const rect = ctx.canvas.getBoundingClientRect();
     if (this.keepWithinContextBounds) {
       if (this.position.x + this.particleOffset.x >= rect.width) {
@@ -43,13 +52,14 @@ export abstract class IDrawable {
 }
 
 export type CircleInitializer = {
-    position?: Vec;
-    velocity?: Vec;
-    acceleration?: Vec;
-    radius: number;
-    strokeStyle?: string | CanvasGradient | CanvasPattern;
-    fillStyle?: string | CanvasGradient | CanvasPattern;
-}
+  position?: Vec;
+  velocity?: Vec;
+  acceleration?: Vec;
+  radius: number;
+  strokeStyle?: string | CanvasGradient | CanvasPattern;
+  fillStyle?: string | CanvasGradient | CanvasPattern;
+  keepWithinContextBounds?: boolean;
+};
 
 export class Circle extends IDrawable {
   position: Vec;
@@ -59,7 +69,15 @@ export class Circle extends IDrawable {
   strokeStyle: string | CanvasGradient | CanvasPattern;
   fillStyle: string | CanvasGradient | CanvasPattern;
 
-  constructor({ position, velocity, acceleration, radius, strokeStyle, fillStyle }: CircleInitializer) {
+  constructor({
+    position,
+    velocity,
+    acceleration,
+    radius,
+    strokeStyle,
+    fillStyle,
+    keepWithinContextBounds,
+  }: CircleInitializer) {
     super();
     this.position = position || { x: 0, y: 0 };
     this.velocity = velocity || { x: 0, y: 0 };
@@ -67,6 +85,7 @@ export class Circle extends IDrawable {
     this.radius = radius;
     this.strokeStyle = strokeStyle || "black";
     this.fillStyle = fillStyle || "white";
+    this.keepWithinContextBounds = keepWithinContextBounds || false;
   }
 
   protected _draw(ctx: CanvasRenderingContext2D): void {

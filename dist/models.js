@@ -15,17 +15,19 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var IDrawable = (function () {
     function IDrawable() {
-        this.requiresUpdate = true;
         this.keepWithinContextBounds = false;
         this.particleOffset = { x: 0, y: 0 };
     }
     IDrawable.prototype.draw = function (ctx) {
-        if (!this.requiresUpdate)
-            return;
         this._draw(ctx);
-        this.requiresUpdate = false;
+        this.computeKinetics(ctx);
     };
     IDrawable.prototype.computeKinetics = function (ctx) {
+        if (this.velocity.x == 0 &&
+            this.velocity.y == 0 &&
+            this.acceleration.x == 0 &&
+            this.acceleration.y == 0)
+            return;
         var rect = ctx.canvas.getBoundingClientRect();
         if (this.keepWithinContextBounds) {
             if (this.position.x + this.particleOffset.x >= rect.width) {
@@ -52,7 +54,7 @@ export { IDrawable };
 var Circle = (function (_super) {
     __extends(Circle, _super);
     function Circle(_a) {
-        var position = _a.position, velocity = _a.velocity, acceleration = _a.acceleration, radius = _a.radius, strokeStyle = _a.strokeStyle, fillStyle = _a.fillStyle;
+        var position = _a.position, velocity = _a.velocity, acceleration = _a.acceleration, radius = _a.radius, strokeStyle = _a.strokeStyle, fillStyle = _a.fillStyle, keepWithinContextBounds = _a.keepWithinContextBounds;
         var _this = _super.call(this) || this;
         _this.position = position || { x: 0, y: 0 };
         _this.velocity = velocity || { x: 0, y: 0 };
@@ -60,6 +62,7 @@ var Circle = (function (_super) {
         _this.radius = radius;
         _this.strokeStyle = strokeStyle || "black";
         _this.fillStyle = fillStyle || "white";
+        _this.keepWithinContextBounds = keepWithinContextBounds || false;
         return _this;
     }
     Circle.prototype._draw = function (ctx) {
