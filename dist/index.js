@@ -36,6 +36,14 @@ function initialize() {
         drawables.splice(drawables.length - deleteCount, drawables.length);
     }
 }
+function joltBalls() {
+    drawables.forEach(function (drawable) {
+        drawable.velocity = {
+            x: getRandomNumber(-1000, 1000),
+            y: getRandomNumber(-4000, 4000),
+        };
+    });
+}
 function animate() {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     drawables.forEach(function (drawable) {
@@ -47,6 +55,9 @@ window.addEventListener("resize", function () {
     rootStyle.style.setProperty("--viewport-height", "".concat(window.innerHeight, "px"));
     setCanvasToFullScreen(canvas);
     initialize();
+});
+window.addEventListener("click", function () {
+    joltBalls();
 });
 setCanvasToFullScreen(canvas);
 initialize();

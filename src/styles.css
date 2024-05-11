@@ -88,3 +88,9 @@ html,
 .author {
    color: #dbd900;
 }
+
+.action-pointer {
+    color: #878684;
+    font-style: italic;
+    font-size: 1.125em;
+}

@@ -49,6 +49,15 @@ function initialize() {
   }
 } //end initialize
 
+function joltBalls() {
+  drawables.forEach((drawable) => {
+    drawable.velocity = {
+      x: getRandomNumber(-1000, 1000),
+      y: getRandomNumber(-4_000, 4_000),
+    };
+  });
+}
+
 function animate() {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -58,11 +67,16 @@ function animate() {
 
   requestAnimationFrame(animate);
 }
+
 window.addEventListener("resize", () => {
   rootStyle.style.setProperty("--viewport-height", `${window.innerHeight}px`);
   setCanvasToFullScreen(canvas);
   initialize();
 });
+
+window.addEventListener("click", () => {
+  joltBalls();
+})
 
 setCanvasToFullScreen(canvas);
 
