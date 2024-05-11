@@ -39,11 +39,13 @@ export abstract class IDrawable {
     const initialVelocity: Vec = { x: this.velocity.x, y: this.velocity.y };
     const newUpdateTime = new Date().getTime();
 
-    const secondsPassed = (newUpdateTime - this.lastUpdate) / 1000;
+    let secondsPassed = (newUpdateTime - this.lastUpdate) / 1000;
+    if (secondsPassed > 1) secondsPassed = 0;
 
     // Update the velocity.
     this.velocity.x += this.acceleration.x * secondsPassed;
     this.velocity.y += this.acceleration.y * secondsPassed;
+
 
     const rect = ctx.canvas.getBoundingClientRect();
     // If the object is supposed to be kept within the context bounds.
@@ -78,6 +80,7 @@ export abstract class IDrawable {
       }
     }
 
+    
     
     // Update the position.
     this.position.x += this.velocity.x * secondsPassed;

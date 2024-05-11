@@ -33,6 +33,8 @@ var IDrawable = (function () {
         var initialVelocity = { x: this.velocity.x, y: this.velocity.y };
         var newUpdateTime = new Date().getTime();
         var secondsPassed = (newUpdateTime - this.lastUpdate) / 1000;
+        if (secondsPassed > 1)
+            secondsPassed = 0;
         this.velocity.x += this.acceleration.x * secondsPassed;
         this.velocity.y += this.acceleration.y * secondsPassed;
         var rect = ctx.canvas.getBoundingClientRect();
