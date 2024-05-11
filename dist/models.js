@@ -20,6 +20,7 @@ var IDrawable = (function () {
         this.particleOffset = { x: 0, y: 0 };
         this.frictionOnBounce = { x: 0, y: 0 };
         this.lastUpdate = new Date().getTime();
+        this.stickyOnBounceOnLowSpeed = { x: 0, y: 0 };
     }
     IDrawable.prototype.draw = function (ctx) {
         this._draw(ctx);
@@ -61,8 +62,8 @@ var IDrawable = (function () {
             var newPositionWithinBounds = positionWithinBounds(newPosition.y, rect.top + this.particleOffset.y, rect.bottom - this.particleOffset.y);
             if (!newPositionWithinBounds && withinBounds && this.frictionOnBounce.y > 0) {
                 Object.assign(newVelocity, {
-                    x: newVelocity.x * (1 - this.frictionOnBounce.y),
-                    y: newVelocity.y * (1 - this.frictionOnBounce.y),
+                    x: Math.abs(newVelocity.x) < this.stickyOnBounceOnLowSpeed.x ? 0 : newVelocity.x * (1 - this.frictionOnBounce.y),
+                    y: Math.abs(newVelocity.y) < this.stickyOnBounceOnLowSpeed.y ? 0 : newVelocity.y * (1 - this.frictionOnBounce.y),
                 });
             }
             this.velocity = newVelocity;
@@ -77,7 +78,7 @@ export { IDrawable };
 var Circle = (function (_super) {
     __extends(Circle, _super);
     function Circle(_a) {
-        var position = _a.position, velocity = _a.velocity, acceleration = _a.acceleration, radius = _a.radius, strokeStyle = _a.strokeStyle, fillStyle = _a.fillStyle, keepWithinContextBounds = _a.keepWithinContextBounds, frictionOnBounce = _a.frictionOnBounce;
+        var position = _a.position, velocity = _a.velocity, acceleration = _a.acceleration, radius = _a.radius, strokeStyle = _a.strokeStyle, fillStyle = _a.fillStyle, keepWithinContextBounds = _a.keepWithinContextBounds, frictionOnBounce = _a.frictionOnBounce, stickyOnBounceOnLowSpeed = _a.stickyOnBounceOnLowSpeed;
         var _this = _super.call(this) || this;
         _this.frictionOnBounce = frictionOnBounce || { x: 0, y: 0 };
         _this.position = position || { x: 0, y: 0 };
@@ -88,6 +89,7 @@ var Circle = (function (_super) {
         _this.fillStyle = fillStyle || "white";
         _this.keepWithinContextBounds = keepWithinContextBounds || false;
         _this.particleOffset = { x: radius, y: radius };
+        _this.stickyOnBounceOnLowSpeed = stickyOnBounceOnLowSpeed || { x: 0, y: 0 };
         return _this;
     }
     Circle.prototype._draw = function (ctx) {

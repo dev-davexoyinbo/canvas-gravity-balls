@@ -27,6 +27,7 @@ function initialize() {
                 strokeStyle: color,
                 fillStyle: color,
                 keepWithinContextBounds: true,
+                stickyOnBounceOnLowSpeed: { x: 90, y: 90 },
             }));
         }
     }
