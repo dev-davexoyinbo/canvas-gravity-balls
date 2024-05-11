@@ -21,7 +21,7 @@ function initialize() {
       const radius = getRandomNumber(20, 70);
       const position: Vec = {
         x: getRandomNumber(radius, rect.width - radius),
-        y: getRandomNumber(radius, rect.height * 0.95 - radius),
+        y: getRandomNumber(radius, rect.height * 0.97 - radius),
       };
       const velocity: Vec = {
         x: getRandomNumber(-70, 70),
