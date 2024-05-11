@@ -3,10 +3,11 @@ import { Circle } from "./models.js";
 import { setCanvasToFullScreen } from "./utils.js";
 var drawables = [];
 function initialize() {
+    drawables.splice(0, drawables.length);
     var circle = new Circle({
-        position: { x: 100, y: 100 },
-        velocity: { x: 1, y: 0 },
-        acceleration: { x: 0, y: 0 },
+        position: { x: 400, y: 400 },
+        velocity: { x: 30, y: 50 },
+        acceleration: { x: 0, y: 1000 },
         radius: 200,
         strokeStyle: "black",
         fillStyle: "red",
