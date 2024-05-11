@@ -13,11 +13,12 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+import { positionWithinBounds } from "./utils.js";
 var IDrawable = (function () {
     function IDrawable() {
         this.keepWithinContextBounds = false;
         this.particleOffset = { x: 0, y: 0 };
-        this.frictionOnBounce = { x: 0.8, y: 0.8 };
+        this.frictionOnBounce = { x: 0, y: 0 };
         this.lastUpdate = new Date().getTime();
     }
     IDrawable.prototype.draw = function (ctx) {
@@ -35,30 +36,37 @@ var IDrawable = (function () {
         var secondsPassed = (newUpdateTime - this.lastUpdate) / 1000;
         if (secondsPassed > 1)
             secondsPassed = 0;
+        var rect = ctx.canvas.getBoundingClientRect();
         this.velocity.x += this.acceleration.x * secondsPassed;
         this.velocity.y += this.acceleration.y * secondsPassed;
-        var rect = ctx.canvas.getBoundingClientRect();
         if (this.keepWithinContextBounds) {
-            if (this.position.x + this.particleOffset.x >= rect.width) {
-                this.velocity.x = Math.abs(this.velocity.x) * -1;
+            var newVelocity = {
+                x: this.velocity.x,
+                y: this.velocity.y,
+            };
+            var newPosition = {
+                x: this.position.x + newVelocity.x * secondsPassed,
+                y: this.position.y + newVelocity.y * secondsPassed,
+            };
+            if (!positionWithinBounds(newPosition.x, rect.left + this.particleOffset.x, rect.right - this.particleOffset.x)) {
+                newVelocity.x =
+                    Math.abs(newVelocity.x) *
+                        (newPosition.x < rect.left + this.particleOffset.x ? 1 : -1);
             }
-            else if (this.position.x - this.particleOffset.x <= 0) {
-                this.velocity.x = Math.abs(this.velocity.x);
+            if (!positionWithinBounds(newPosition.y, rect.top + this.particleOffset.y, rect.bottom - this.particleOffset.y)) {
+                newVelocity.y =
+                    Math.abs(newVelocity.y) *
+                        (newPosition.y < rect.left + this.particleOffset.y ? 1 : -1);
             }
-            if (this.position.y + this.particleOffset.y >= rect.height) {
-                this.velocity.y = Math.abs(this.velocity.y) * -1;
+            var withinBounds = positionWithinBounds(this.position.y, rect.top + this.particleOffset.y, rect.bottom - this.particleOffset.y);
+            var newPositionWithinBounds = positionWithinBounds(newPosition.y, rect.top + this.particleOffset.y, rect.bottom - this.particleOffset.y);
+            if (!newPositionWithinBounds && withinBounds && this.frictionOnBounce.y > 0) {
+                Object.assign(newVelocity, {
+                    x: Math.abs(newVelocity.x) < 90 ? 0 : newVelocity.x * (1 - this.frictionOnBounce.y),
+                    y: Math.abs(newVelocity.y) < 90 ? 0 : newVelocity.y * (1 - this.frictionOnBounce.y),
+                });
             }
-            else if (this.position.y - this.particleOffset.y <= 0) {
-                this.velocity.y = Math.abs(this.velocity.y);
-            }
-            if (this.velocity.x * initialVelocity.x < 0) {
-                this.velocity.x = this.velocity.x * this.frictionOnBounce.x;
-                if (Math.abs(this.velocity.x) < 0.5)
-                    this.velocity.x = 0;
-            }
-            if (this.velocity.y * initialVelocity.y < 0) {
-                this.velocity.y = this.velocity.y * this.frictionOnBounce.y;
-            }
+            this.velocity = newVelocity;
         }
         this.position.x += this.velocity.x * secondsPassed;
         this.position.y += this.velocity.y * secondsPassed;
@@ -70,8 +78,9 @@ export { IDrawable };
 var Circle = (function (_super) {
     __extends(Circle, _super);
     function Circle(_a) {
-        var position = _a.position, velocity = _a.velocity, acceleration = _a.acceleration, radius = _a.radius, strokeStyle = _a.strokeStyle, fillStyle = _a.fillStyle, keepWithinContextBounds = _a.keepWithinContextBounds;
+        var position = _a.position, velocity = _a.velocity, acceleration = _a.acceleration, radius = _a.radius, strokeStyle = _a.strokeStyle, fillStyle = _a.fillStyle, keepWithinContextBounds = _a.keepWithinContextBounds, frictionOnBounce = _a.frictionOnBounce;
         var _this = _super.call(this) || this;
+        _this.frictionOnBounce = frictionOnBounce || { x: 0, y: 0 };
         _this.position = position || { x: 0, y: 0 };
         _this.velocity = velocity || { x: 0, y: 0 };
         _this.acceleration = acceleration || { x: 0, y: 0 };

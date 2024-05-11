@@ -1,3 +1,5 @@
+import { positionWithinBounds } from "./utils.js";
+
 export type Vec = {
   x: number;
   y: number;
@@ -7,7 +9,7 @@ export abstract class IDrawable {
   //   requiresUpdate: boolean = true;
   keepWithinContextBounds: boolean = false;
   particleOffset: Vec = { x: 0, y: 0 };
-  frictionOnBounce: Vec = { x: 0.8, y: 0.8 };
+  frictionOnBounce: Vec = { x: 0, y: 0 };
   lastUpdate: number = new Date().getTime();
 
   abstract position: Vec;
@@ -42,49 +44,122 @@ export abstract class IDrawable {
     let secondsPassed = (newUpdateTime - this.lastUpdate) / 1000;
     if (secondsPassed > 1) secondsPassed = 0;
 
+    const rect = ctx.canvas.getBoundingClientRect();
+
     // Update the velocity.
     this.velocity.x += this.acceleration.x * secondsPassed;
     this.velocity.y += this.acceleration.y * secondsPassed;
 
-
-    const rect = ctx.canvas.getBoundingClientRect();
     // If the object is supposed to be kept within the context bounds.
     if (this.keepWithinContextBounds) {
+      const newVelocity = {
+        x: this.velocity.x,
+        y: this.velocity.y,
+      };
+      const newPosition = {
+        x: this.position.x + newVelocity.x * secondsPassed,
+        y: this.position.y + newVelocity.y * secondsPassed,
+      };
+
       // If the object is outside the context bounds on the x-axis.
-      if (this.position.x + this.particleOffset.x >= rect.width) {
+      if (
+        !positionWithinBounds(
+          newPosition.x,
+          rect.left + this.particleOffset.x,
+          rect.right - this.particleOffset.x
+        )
+      ) {
         // Reverse the velocity on the x-axis.
-        this.velocity.x = Math.abs(this.velocity.x) * -1;
-      } else if (this.position.x - this.particleOffset.x <= 0) {
-        // If the object is outside the context bounds on the x-axis.
-        this.velocity.x = Math.abs(this.velocity.x);
+        newVelocity.x =
+          Math.abs(newVelocity.x) *
+          (newPosition.x < rect.left + this.particleOffset.x ? 1 : -1);
       }
+      //   else if (this.position.x - this.particleOffset.x <= 0) {
+      //     // If the object is outside the context bounds on the x-axis.
+      //     newVelocity.x = Math.abs(newVelocity.x);
+      //   }
 
       // If the object is outside the context bounds on the y-axis.
-      if (this.position.y + this.particleOffset.y >= rect.height) {
+      if (
+        !positionWithinBounds(
+          newPosition.y,
+          rect.top + this.particleOffset.y,
+          rect.bottom - this.particleOffset.y
+        )
+      ) {
         // Reverse the velocity on the y-axis.
-        this.velocity.y = Math.abs(this.velocity.y) * -1;
-      } else if (this.position.y - this.particleOffset.y <= 0) {
-        // If the object is outside the context bounds on the y-axis.
-        this.velocity.y = Math.abs(this.velocity.y);
+        newVelocity.y =
+          Math.abs(newVelocity.y) *
+          (newPosition.y < rect.left + this.particleOffset.y ? 1 : -1);
       }
+      //   else if (this.position.y - this.particleOffset.y <= 0) {
+      //     // If the object is outside the conteyt bounds on the y-axis.
+      //     newVelocity.y = Math.abs(newVelocity.y);
+      //   }
+
+      //   // Check if the proposed x position is within the canvas bounds considering the offset
+      //   if (
+      //     this.position.x + this.velocity.x * secondsPassed + this.particleOffset.x <
+      //       rect.width &&
+      //     this.position.x +
+      //       this.velocity.x * secondsPassed -
+      //       this.particleOffset.x >
+      //       0
+      //   ) {
+      //     // Update the x position
+      //     this.position.x += this.velocity.x * secondsPassed;
+      //   }
 
       // If the velocity on the x-axis changed sign, apply friction.
-      if (this.velocity.x * initialVelocity.x < 0) {
-        this.velocity.x = this.velocity.x * this.frictionOnBounce.x;
-        if(Math.abs(this.velocity.x) < 0.5) this.velocity.x = 0;
-      }
+      //   if (this.velocity.x * initialVelocity.x < 0) {
+      //     this.velocity.x = this.velocity.x * (1 - this.frictionOnBounce.x);
+      //   }
 
       // If the velocity on the y-axis changed sign, apply friction.
-      if (this.velocity.y * initialVelocity.y < 0) {
-        this.velocity.y = this.velocity.y * this.frictionOnBounce.y;
+      const withinBounds = positionWithinBounds(
+        this.position.y,
+        rect.top + this.particleOffset.y,
+        rect.bottom - this.particleOffset.y
+      );
+
+      const newPositionWithinBounds = positionWithinBounds(
+        newPosition.y,
+        rect.top + this.particleOffset.y,
+        rect.bottom - this.particleOffset.y
+      );
+
+      if (!newPositionWithinBounds && withinBounds && this.frictionOnBounce.y > 0) {
+        // this.velocity.y = newVelocity;
+        //   this.velocity.y = 0;
+        //   console.log(newPosition - this.particleOffset.y);
+        //   console.log(this.velocity);
+        // console.log(`new Position: ${newPosition}`)
+        // console.log(`top bound: ${rect.top + this.particleOffset.y}`)
+        // console.log(`bottom bound: ${rect.bottom - this.particleOffset.y}`)
+        Object.assign(newVelocity, {
+            x: Math.abs(newVelocity.x) < 90 ? 0 : newVelocity.x * (1 - this.frictionOnBounce.y),
+            y: Math.abs(newVelocity.y) < 90 ? 0 : newVelocity.y * (1 - this.frictionOnBounce.y),
+        });
+        // console.log(newVelocity);
+        // console.log(this.acceleration.y * secondsPassed)
       }
+      this.velocity = newVelocity;
     }
 
-    
-    
     // Update the position.
     this.position.x += this.velocity.x * secondsPassed;
     this.position.y += this.velocity.y * secondsPassed;
+
+    // if (this.keepWithinContextBounds) {
+    //   this.position.x = Math.min(
+    //     Math.max(this.position.x, 0),
+    //     rect.width - this.particleOffset.x
+    //   );
+    //   this.position.y = Math.min(
+    //     Math.max(this.position.y, 0),
+    //     rect.height - this.particleOffset.y
+    //   );
+    // }
 
     this.lastUpdate = newUpdateTime;
   }
@@ -94,6 +169,7 @@ export type CircleInitializer = {
   position?: Vec;
   velocity?: Vec;
   acceleration?: Vec;
+  frictionOnBounce?: Vec;
   radius: number;
   strokeStyle?: string | CanvasGradient | CanvasPattern;
   fillStyle?: string | CanvasGradient | CanvasPattern;
@@ -104,6 +180,7 @@ export class Circle extends IDrawable {
   position: Vec;
   velocity: Vec;
   acceleration: Vec;
+  frictionOnBounce: Vec;
   radius: number;
   strokeStyle: string | CanvasGradient | CanvasPattern;
   fillStyle: string | CanvasGradient | CanvasPattern;
@@ -116,8 +193,10 @@ export class Circle extends IDrawable {
     strokeStyle,
     fillStyle,
     keepWithinContextBounds,
+    frictionOnBounce,
   }: CircleInitializer) {
     super();
+    this.frictionOnBounce = frictionOnBounce || { x: 0, y: 0 };
     this.position = position || { x: 0, y: 0 };
     this.velocity = velocity || { x: 0, y: 0 };
     this.acceleration = acceleration || { x: 0, y: 0 };

@@ -16,3 +16,6 @@ export function setCanvasSize(canvas, width, height) {
     canvas.style.width = "".concat(width, "px");
     canvas.style.height = "".concat(height, "px");
 }
+export function positionWithinBounds(val, min, max) {
+    return min <= val && val <= max;
+}

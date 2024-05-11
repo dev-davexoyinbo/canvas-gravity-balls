@@ -28,3 +28,7 @@ export function setCanvasSize(
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
 }
+
+export function positionWithinBounds(val: number, min: number, max: number): boolean {
+  return  min <= val && val <= max;
+}

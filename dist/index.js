@@ -1,19 +1,33 @@
 import { canvas, ctx, rootStyle } from "./app.js";
 import { Circle } from "./models.js";
-import { setCanvasToFullScreen } from "./utils.js";
+import { getRandomNumber, setCanvasToFullScreen } from "./utils.js";
 var drawables = [];
 function initialize() {
     drawables.splice(0, drawables.length);
-    var circle = new Circle({
-        position: { x: 400, y: 400 },
-        velocity: { x: 30, y: 50 },
-        acceleration: { x: 0, y: 1000 },
-        radius: 200,
-        strokeStyle: "black",
-        fillStyle: "red",
-        keepWithinContextBounds: true,
-    });
-    drawables.push(circle);
+    var frictionOnBounce = { x: 0.05, y: 0.1 };
+    var rect = ctx.canvas.getBoundingClientRect();
+    for (var i = 0; i < 10; i++) {
+        var radius = getRandomNumber(20, 70);
+        var position = {
+            x: getRandomNumber(radius, rect.width - radius),
+            y: getRandomNumber(radius, rect.height - radius),
+        };
+        var velocity = {
+            x: getRandomNumber(10, 70),
+            y: getRandomNumber(10, 70),
+        };
+        console.log(position);
+        drawables.push(new Circle({
+            position: position,
+            velocity: velocity,
+            acceleration: { x: 0, y: 1000 },
+            radius: radius,
+            frictionOnBounce: frictionOnBounce,
+            strokeStyle: "black",
+            fillStyle: "red",
+            keepWithinContextBounds: true,
+        }));
+    }
 }
 function animate() {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
