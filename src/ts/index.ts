@@ -21,15 +21,13 @@ function initialize() {
       const radius = getRandomNumber(20, 70);
       const position: Vec = {
         x: getRandomNumber(radius, rect.width - radius),
-        y: getRandomNumber(radius, rect.height - radius),
+        y: getRandomNumber(radius, rect.height * 0.95 - radius),
       };
       const velocity: Vec = {
-        x: getRandomNumber(10, 70),
-        y: getRandomNumber(10, 70),
+        x: getRandomNumber(-70, 70),
+        y: getRandomNumber(-70, 70),
       };
-      const color = getRandomColor({
-        // solid: true
-      });
+      const color = getRandomColor();
 
       drawables.push(
         new Circle({

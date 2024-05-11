@@ -11,13 +11,13 @@ function initialize() {
             var radius = getRandomNumber(20, 70);
             var position = {
                 x: getRandomNumber(radius, rect.width - radius),
-                y: getRandomNumber(radius, rect.height - radius),
+                y: getRandomNumber(radius, rect.height * 0.95 - radius),
             };
             var velocity = {
-                x: getRandomNumber(10, 70),
-                y: getRandomNumber(10, 70),
+                x: getRandomNumber(-70, 70),
+                y: getRandomNumber(-70, 70),
             };
-            var color = getRandomColor({});
+            var color = getRandomColor();
             drawables.push(new Circle({
                 position: position,
                 velocity: velocity,

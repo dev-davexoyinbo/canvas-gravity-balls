@@ -15,7 +15,7 @@ html,
 }
 
 .canvas {
-    background-color: lightcyan;
+    background-color: rgb(8, 87, 3);
     box-sizing: border-box;
     position: absolute;
     top: 0;
@@ -40,7 +40,7 @@ html,
     /* height: 100%; */
     backdrop-filter: blur(4px);
     border-radius: 18px;
-    mix-blend-mode: difference;
+    mix-blend-mode: exclusion;
 }
 
 .heading-container h1 {

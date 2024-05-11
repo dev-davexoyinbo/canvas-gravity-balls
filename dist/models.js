@@ -31,7 +31,6 @@ var IDrawable = (function () {
             this.acceleration.x == 0 &&
             this.acceleration.y == 0)
             return;
-        var initialVelocity = { x: this.velocity.x, y: this.velocity.y };
         var newUpdateTime = new Date().getTime();
         var secondsPassed = (newUpdateTime - this.lastUpdate) / 1000;
         if (secondsPassed > 1)
@@ -62,8 +61,8 @@ var IDrawable = (function () {
             var newPositionWithinBounds = positionWithinBounds(newPosition.y, rect.top + this.particleOffset.y, rect.bottom - this.particleOffset.y);
             if (!newPositionWithinBounds && withinBounds && this.frictionOnBounce.y > 0) {
                 Object.assign(newVelocity, {
-                    x: Math.abs(newVelocity.x) < 90 ? 0 : newVelocity.x * (1 - this.frictionOnBounce.y),
-                    y: Math.abs(newVelocity.y) < 90 ? 0 : newVelocity.y * (1 - this.frictionOnBounce.y),
+                    x: newVelocity.x * (1 - this.frictionOnBounce.y),
+                    y: newVelocity.y * (1 - this.frictionOnBounce.y),
                 });
             }
             this.velocity = newVelocity;

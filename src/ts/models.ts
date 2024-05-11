@@ -38,7 +38,6 @@ export abstract class IDrawable {
       this.acceleration.y == 0
     )
       return;
-    const initialVelocity: Vec = { x: this.velocity.x, y: this.velocity.y };
     const newUpdateTime = new Date().getTime();
 
     let secondsPassed = (newUpdateTime - this.lastUpdate) / 1000;
@@ -74,10 +73,6 @@ export abstract class IDrawable {
           Math.abs(newVelocity.x) *
           (newPosition.x < rect.left + this.particleOffset.x ? 1 : -1);
       }
-      //   else if (this.position.x - this.particleOffset.x <= 0) {
-      //     // If the object is outside the context bounds on the x-axis.
-      //     newVelocity.x = Math.abs(newVelocity.x);
-      //   }
 
       // If the object is outside the context bounds on the y-axis.
       if (
@@ -92,28 +87,6 @@ export abstract class IDrawable {
           Math.abs(newVelocity.y) *
           (newPosition.y < rect.left + this.particleOffset.y ? 1 : -1);
       }
-      //   else if (this.position.y - this.particleOffset.y <= 0) {
-      //     // If the object is outside the conteyt bounds on the y-axis.
-      //     newVelocity.y = Math.abs(newVelocity.y);
-      //   }
-
-      //   // Check if the proposed x position is within the canvas bounds considering the offset
-      //   if (
-      //     this.position.x + this.velocity.x * secondsPassed + this.particleOffset.x <
-      //       rect.width &&
-      //     this.position.x +
-      //       this.velocity.x * secondsPassed -
-      //       this.particleOffset.x >
-      //       0
-      //   ) {
-      //     // Update the x position
-      //     this.position.x += this.velocity.x * secondsPassed;
-      //   }
-
-      // If the velocity on the x-axis changed sign, apply friction.
-      //   if (this.velocity.x * initialVelocity.x < 0) {
-      //     this.velocity.x = this.velocity.x * (1 - this.frictionOnBounce.x);
-      //   }
 
       // If the velocity on the y-axis changed sign, apply friction.
       const withinBounds = positionWithinBounds(
@@ -129,19 +102,12 @@ export abstract class IDrawable {
       );
 
       if (!newPositionWithinBounds && withinBounds && this.frictionOnBounce.y > 0) {
-        // this.velocity.y = newVelocity;
-        //   this.velocity.y = 0;
-        //   console.log(newPosition - this.particleOffset.y);
-        //   console.log(this.velocity);
-        // console.log(`new Position: ${newPosition}`)
-        // console.log(`top bound: ${rect.top + this.particleOffset.y}`)
-        // console.log(`bottom bound: ${rect.bottom - this.particleOffset.y}`)
         Object.assign(newVelocity, {
-            x: Math.abs(newVelocity.x) < 90 ? 0 : newVelocity.x * (1 - this.frictionOnBounce.y),
-            y: Math.abs(newVelocity.y) < 90 ? 0 : newVelocity.y * (1 - this.frictionOnBounce.y),
+            // x: Math.abs(newVelocity.x) < 90 ? 0 : newVelocity.x * (1 - this.frictionOnBounce.y),
+            // y: Math.abs(newVelocity.y) < 90 ? 0 : newVelocity.y * (1 - this.frictionOnBounce.y),
+            x: newVelocity.x * (1 - this.frictionOnBounce.y),
+            y: newVelocity.y * (1 - this.frictionOnBounce.y),
         });
-        // console.log(newVelocity);
-        // console.log(this.acceleration.y * secondsPassed)
       }
       this.velocity = newVelocity;
     }
@@ -149,17 +115,6 @@ export abstract class IDrawable {
     // Update the position.
     this.position.x += this.velocity.x * secondsPassed;
     this.position.y += this.velocity.y * secondsPassed;
-
-    // if (this.keepWithinContextBounds) {
-    //   this.position.x = Math.min(
-    //     Math.max(this.position.x, 0),
-    //     rect.width - this.particleOffset.x
-    //   );
-    //   this.position.y = Math.min(
-    //     Math.max(this.position.y, 0),
-    //     rect.height - this.particleOffset.y
-    //   );
-    // }
 
     this.lastUpdate = newUpdateTime;
   }
