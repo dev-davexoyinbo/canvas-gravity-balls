@@ -4,10 +4,10 @@ export function getRandomNumber(min: number, max: number) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-export function getRandomColor() {
+export function getRandomColor(options?: {solid?: boolean}) {
   return `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(
     Math.random() * 256
-  )}, ${Math.floor(Math.random() * 256)}, ${0.5 + Math.random() * 0.5})`;
+  )}, ${Math.floor(Math.random() * 256)}, ${options?.solid ? 1 : 0.5 + Math.random() * 0.5})`;
 }
 
 export function setCanvasToFullScreen(canvas: HTMLCanvasElement) {

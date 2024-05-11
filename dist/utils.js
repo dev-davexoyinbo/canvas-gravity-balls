@@ -2,8 +2,8 @@ import { DEVICE_DPI_RATIO } from "./app.js";
 export function getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
-export function getRandomColor() {
-    return "rgba(".concat(Math.floor(Math.random() * 256), ", ").concat(Math.floor(Math.random() * 256), ", ").concat(Math.floor(Math.random() * 256), ", ").concat(0.5 + Math.random() * 0.5, ")");
+export function getRandomColor(options) {
+    return "rgba(".concat(Math.floor(Math.random() * 256), ", ").concat(Math.floor(Math.random() * 256), ", ").concat(Math.floor(Math.random() * 256), ", ").concat((options === null || options === void 0 ? void 0 : options.solid) ? 1 : 0.5 + Math.random() * 0.5, ")");
 }
 export function setCanvasToFullScreen(canvas) {
     setCanvasSize(canvas, window.innerWidth, window.innerHeight);

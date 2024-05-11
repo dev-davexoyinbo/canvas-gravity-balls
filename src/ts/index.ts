@@ -1,16 +1,18 @@
-import { canvas, ctx, rootStyle } from "./app.js";
+import { BALLS_DENSITY, canvas, ctx, rootStyle } from "./app.js";
 import { Circle, IDrawable, Vec } from "./models.js";
-import { getRandomNumber, setCanvasToFullScreen } from "./utils.js";
+import { getRandomColor, getRandomNumber, setCanvasToFullScreen } from "./utils.js";
 
 const drawables: IDrawable[] = [];
 
 function initialize() {
-  drawables.splice(0, drawables.length);
-
   const frictionOnBounce: Vec = { x: 0.05, y: 0.1 };
   const rect = ctx.canvas.getBoundingClientRect();
 
-  for (let i = 0; i < 10; i++) {
+  const ballCount = Math.floor(rect.width * rect.height / BALLS_DENSITY / 10_000);
+
+  drawables.splice(0, drawables.length);
+
+  for (let i = 0; i < ballCount; i++) {
     const radius = getRandomNumber(20, 70);
     const position: Vec = {
       x: getRandomNumber(radius, rect.width - radius),
@@ -20,8 +22,10 @@ function initialize() {
       x: getRandomNumber(10, 70),
       y: getRandomNumber(10, 70),
     };
+    const color = getRandomColor({
+      // solid: true
+    })
 
-    console.log(position)
     drawables.push(
       new Circle({
         position,
@@ -29,8 +33,8 @@ function initialize() {
         acceleration: { x: 0, y: 1000 },
         radius,
         frictionOnBounce,
-        strokeStyle: "black",
-        fillStyle: "red",
+        strokeStyle: color,
+        fillStyle: color,
         keepWithinContextBounds: true,
       })
     );

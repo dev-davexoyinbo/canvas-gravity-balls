@@ -7,6 +7,6 @@ export const canvas: HTMLCanvasElement = document.querySelector(
 ) as HTMLCanvasElement;
 export const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
-// number of balls per 100 pixels square
+// number of balls per 10_000 pixels square, ie 100px x 100px
 export const BALLS_DENSITY = 1;
 
