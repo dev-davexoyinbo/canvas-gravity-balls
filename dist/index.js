@@ -39,7 +39,7 @@ function joltBalls() {
     drawables.forEach(function (drawable) {
         drawable.velocity = {
             x: getRandomNumber(-1000, 1000),
-            y: getRandomNumber(-4000, 4000),
+            y: getRandomNumber(500, 4000),
         };
     });
 }
