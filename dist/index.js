@@ -3,7 +3,7 @@ import { Circle } from "./models.js";
 import { getRandomColor, getRandomNumber, setCanvasToFullScreen, } from "./utils.js";
 var drawables = [];
 function initialize() {
-    var frictionOnBounce = { x: 0.05, y: 0.05 };
+    var frictionOnBounce = { x: 0.05, y: 0.08 };
     var rect = ctx.canvas.getBoundingClientRect();
     var ballCount = Math.floor((rect.width * rect.height) / BALLS_DENSITY / 10000);
     if (ballCount > drawables.length) {
