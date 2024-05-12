@@ -46,9 +46,7 @@ export abstract class IDrawable {
 
     const rect = ctx.canvas.getBoundingClientRect();
 
-    // Update the velocity.
-    this.velocity.x += this.acceleration.x * secondsPassed;
-    this.velocity.y += this.acceleration.y * secondsPassed;
+    
 
     // If the object is supposed to be kept within the context bounds.
     if (this.keepWithinContextBounds) {
@@ -104,18 +102,41 @@ export abstract class IDrawable {
 
       if (!newPositionWithinBounds && withinBounds && this.frictionOnBounce.y > 0) {
         Object.assign(newVelocity, {
-            x: Math.abs(newVelocity.x) < this.stickyOnBounceOnLowSpeed.x ? 0 : newVelocity.x * (1 - this.frictionOnBounce.y),
-            y: Math.abs(newVelocity.y) < this.stickyOnBounceOnLowSpeed.y ? 0 : newVelocity.y * (1 - this.frictionOnBounce.y),
-            // x: newVelocity.x * (1 - this.frictionOnBounce.y),
-            // y: newVelocity.y * (1 - this.frictionOnBounce.y),
+            // x: Math.abs(newVelocity.x) < this.stickyOnBounceOnLowSpeed.x ? 0 : newVelocity.x * (1 - this.frictionOnBounce.y),
+            // y: Math.abs(newVelocity.y) < this.stickyOnBounceOnLowSpeed.y ? 0 : newVelocity.y * (1 - this.frictionOnBounce.y),
+            x: newVelocity.x * (1 - this.frictionOnBounce.y),
+            y: newVelocity.y * (1 - this.frictionOnBounce.y),
         });
       }
       this.velocity = newVelocity;
     }
 
+    // Update the velocity.
+    this.velocity.x += this.acceleration.x * secondsPassed;
+    this.velocity.y += this.acceleration.y * secondsPassed;
+
     // Update the position.
     this.position.x += this.velocity.x * secondsPassed;
     this.position.y += this.velocity.y * secondsPassed;
+
+    if(this.keepWithinContextBounds) {
+      Object.assign(this.position, {
+        x: Math.max(
+          rect.left + this.particleOffset.x,
+          Math.min(
+            rect.right - this.particleOffset.x,
+            this.position.x
+          )
+        ),
+        y: Math.max(
+          rect.top + this.particleOffset.y,
+          Math.min(
+            rect.bottom - this.particleOffset.y,
+            this.position.y
+          )
+        ),
+      });
+    }
 
     this.lastUpdate = newUpdateTime;
   }
@@ -130,7 +151,6 @@ export type CircleInitializer = {
   strokeStyle?: string | CanvasGradient | CanvasPattern;
   fillStyle?: string | CanvasGradient | CanvasPattern;
   keepWithinContextBounds?: boolean;
-  stickyOnBounceOnLowSpeed?: Vec
 };
 
 export class Circle extends IDrawable {
@@ -151,7 +171,6 @@ export class Circle extends IDrawable {
     fillStyle,
     keepWithinContextBounds,
     frictionOnBounce,
-    stickyOnBounceOnLowSpeed,
   }: CircleInitializer) {
     super();
     this.frictionOnBounce = frictionOnBounce || { x: 0, y: 0 };
@@ -163,7 +182,6 @@ export class Circle extends IDrawable {
     this.fillStyle = fillStyle || "white";
     this.keepWithinContextBounds = keepWithinContextBounds || false;
     this.particleOffset = { x: radius, y: radius };
-    this.stickyOnBounceOnLowSpeed = stickyOnBounceOnLowSpeed || { x: 0, y: 0 };
   }
 
   protected _draw(ctx: CanvasRenderingContext2D): void {

@@ -3,7 +3,7 @@ import { Circle } from "./models.js";
 import { getRandomColor, getRandomNumber, setCanvasToFullScreen, } from "./utils.js";
 var drawables = [];
 function initialize() {
-    var frictionOnBounce = { x: 0.05, y: 0.1 };
+    var frictionOnBounce = { x: 0.05, y: 0.05 };
     var rect = ctx.canvas.getBoundingClientRect();
     var ballCount = Math.floor((rect.width * rect.height) / BALLS_DENSITY / 10000);
     if (ballCount > drawables.length) {
@@ -11,7 +11,7 @@ function initialize() {
             var radius = getRandomNumber(20, 70);
             var position = {
                 x: getRandomNumber(radius, rect.width - radius),
-                y: getRandomNumber(radius, rect.height * 0.95 - radius),
+                y: getRandomNumber(radius, rect.height * 0.97 - radius),
             };
             var velocity = {
                 x: getRandomNumber(-70, 70),
@@ -27,7 +27,6 @@ function initialize() {
                 strokeStyle: color,
                 fillStyle: color,
                 keepWithinContextBounds: true,
-                stickyOnBounceOnLowSpeed: { x: 90, y: 90 },
             }));
         }
     }

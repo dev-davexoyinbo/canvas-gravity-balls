@@ -37,8 +37,6 @@ var IDrawable = (function () {
         if (secondsPassed > 1)
             secondsPassed = 0;
         var rect = ctx.canvas.getBoundingClientRect();
-        this.velocity.x += this.acceleration.x * secondsPassed;
-        this.velocity.y += this.acceleration.y * secondsPassed;
         if (this.keepWithinContextBounds) {
             var newVelocity = {
                 x: this.velocity.x,
@@ -62,14 +60,22 @@ var IDrawable = (function () {
             var newPositionWithinBounds = positionWithinBounds(newPosition.y, rect.top + this.particleOffset.y, rect.bottom - this.particleOffset.y);
             if (!newPositionWithinBounds && withinBounds && this.frictionOnBounce.y > 0) {
                 Object.assign(newVelocity, {
-                    x: Math.abs(newVelocity.x) < this.stickyOnBounceOnLowSpeed.x ? 0 : newVelocity.x * (1 - this.frictionOnBounce.y),
-                    y: Math.abs(newVelocity.y) < this.stickyOnBounceOnLowSpeed.y ? 0 : newVelocity.y * (1 - this.frictionOnBounce.y),
+                    x: newVelocity.x * (1 - this.frictionOnBounce.y),
+                    y: newVelocity.y * (1 - this.frictionOnBounce.y),
                 });
             }
             this.velocity = newVelocity;
         }
+        this.velocity.x += this.acceleration.x * secondsPassed;
+        this.velocity.y += this.acceleration.y * secondsPassed;
         this.position.x += this.velocity.x * secondsPassed;
         this.position.y += this.velocity.y * secondsPassed;
+        if (this.keepWithinContextBounds) {
+            Object.assign(this.position, {
+                x: Math.max(rect.left + this.particleOffset.x, Math.min(rect.right - this.particleOffset.x, this.position.x)),
+                y: Math.max(rect.top + this.particleOffset.y, Math.min(rect.bottom - this.particleOffset.y, this.position.y)),
+            });
+        }
         this.lastUpdate = newUpdateTime;
     };
     return IDrawable;
@@ -78,7 +84,7 @@ export { IDrawable };
 var Circle = (function (_super) {
     __extends(Circle, _super);
     function Circle(_a) {
-        var position = _a.position, velocity = _a.velocity, acceleration = _a.acceleration, radius = _a.radius, strokeStyle = _a.strokeStyle, fillStyle = _a.fillStyle, keepWithinContextBounds = _a.keepWithinContextBounds, frictionOnBounce = _a.frictionOnBounce, stickyOnBounceOnLowSpeed = _a.stickyOnBounceOnLowSpeed;
+        var position = _a.position, velocity = _a.velocity, acceleration = _a.acceleration, radius = _a.radius, strokeStyle = _a.strokeStyle, fillStyle = _a.fillStyle, keepWithinContextBounds = _a.keepWithinContextBounds, frictionOnBounce = _a.frictionOnBounce;
         var _this = _super.call(this) || this;
         _this.frictionOnBounce = frictionOnBounce || { x: 0, y: 0 };
         _this.position = position || { x: 0, y: 0 };
@@ -89,7 +95,6 @@ var Circle = (function (_super) {
         _this.fillStyle = fillStyle || "white";
         _this.keepWithinContextBounds = keepWithinContextBounds || false;
         _this.particleOffset = { x: radius, y: radius };
-        _this.stickyOnBounceOnLowSpeed = stickyOnBounceOnLowSpeed || { x: 0, y: 0 };
         return _this;
     }
     Circle.prototype._draw = function (ctx) {

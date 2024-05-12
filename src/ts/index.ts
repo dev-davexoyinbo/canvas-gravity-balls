@@ -9,12 +9,14 @@ import {
 const drawables: IDrawable[] = [];
 
 function initialize() {
-  const frictionOnBounce: Vec = { x: 0.05, y: 0.1 };
+  const frictionOnBounce: Vec = { x: 0.05, y: 0.05 };
   const rect = ctx.canvas.getBoundingClientRect();
 
   const ballCount = Math.floor(
     (rect.width * rect.height) / BALLS_DENSITY / 10_000
   );
+
+  // const ballCount = 1
 
   if (ballCount > drawables.length) {
     for (let i = 0; i < ballCount - drawables.length; i++) {
@@ -39,7 +41,6 @@ function initialize() {
           strokeStyle: color,
           fillStyle: color,
           keepWithinContextBounds: true,
-          stickyOnBounceOnLowSpeed: { x: 90, y: 90 },
         })
       );
     }
