@@ -9,7 +9,7 @@ import {
 const drawables: IDrawable[] = [];
 
 function initialize() {
-  const frictionOnBounce: Vec = { x: 0.05, y: 0.05 };
+  const frictionOnBounce: Vec = { x: 0.05, y: 0.1 };
   const rect = ctx.canvas.getBoundingClientRect();
 
   const ballCount = Math.floor(
